@@ -29,8 +29,15 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
 .card .q{font-size:22px}
 .card .q p{margin:0;font-weight:500;font-size:1em;line-height:1.45}
 /* One line of episodes.json per row. Lines never wrap unless the screen is too narrow even at the smallest size (.wrap) */
-.card .q p span{display:block;white-space:nowrap}
-.card .q.wrap p span{white-space:normal}
+.card .q .ln{display:block;white-space:nowrap}
+.card .q .ln>span{display:block}
+.card .q.wrap .ln{white-space:normal}
+/* Mask-reveal animation clips each line; the padding keeps Thai vowels and tone marks inside the clip */
+.card .q.mask .ln{overflow:hidden;padding-block:.12em;margin-block:-.12em}
+/* Animation switcher, only shown with ?anim= while the animation is being chosen */
+.animbar{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-block:-4px}
+.animbar button{font:500 12px var(--body);color:var(--paper);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
+.animbar button.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
 .card .foot{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px}
 .card .foot small{font-size:12px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .foot b{font-weight:600;font-size:14px}
