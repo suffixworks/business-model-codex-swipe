@@ -9,3 +9,6 @@ dist/
 
 # os
 .DS_Store
+
+# rendered videos
+marketing/*.mp4
