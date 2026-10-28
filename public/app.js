@@ -9,7 +9,7 @@ const spotifyUrl = e => "https://open.spotify.com/episode/" + e.id;
 const shareUrl = e => new URL("ep/" + e.n + "/", document.baseURI).href;
 const byN = n => EP.find(e => e.n === n);
 const deck = $("deck");
-let pile = [], saved = [];
+let pile = [], saved = [], seen = [], lastN = 0;
 
 /* ---------- Analytics (GA4). No measurement ID in config.js = events are dropped ---------- */
 window.dataLayer = window.dataLayer || [];
@@ -29,13 +29,25 @@ function track(name, e, extra){
 /* ---------- Saved list (localStorage only) ---------- */
 try { saved = JSON.parse(localStorage.getItem("bmc-saved") || "[]").filter(n => byN(n)); } catch (_) { saved = []; }
 const persist = () => { try { localStorage.setItem("bmc-saved", JSON.stringify(saved)); } catch (_) {} };
+/* Cards already swiped this round, kept across visits so a returning visitor (and every new episode) starts with what they haven't seen */
+try { seen = JSON.parse(localStorage.getItem("bmc-seen") || "[]").filter(n => byN(n)); } catch (_) { seen = []; }
+const persistSeen = () => { try { localStorage.setItem("bmc-seen", JSON.stringify(seen)); } catch (_) {} };
 
 /* ---------- Deck ---------- */
 function hashEp(){ const m = /^#ep-(\d+)$/.exec(location.hash); return m ? byN(+m[1]) : null; }
+/* Cards for this round: not swiped yet, not already on the deck, and not saved (saved ones live in the saved list).
+   Only when every episode is saved does a fresh round bring the saved ones back. */
+function pool(){
+  const onDeck = live().map(c => c._ep && c._ep.n);
+  const fresh = EP.filter(e => !seen.includes(e.n) && !onDeck.includes(e.n));
+  const unsaved = fresh.filter(e => !saved.includes(e.n));
+  return unsaved.length || seen.length ? unsaved : fresh;
+}
 function shuffle(first){
-  const a = EP.slice();
+  const a = pool();
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  if (first) { const i = a.indexOf(first); if (i > 0) a.unshift(a.splice(i, 1)[0]); }
+  if (first) { const i = a.indexOf(first); if (i >= 0) a.splice(i, 1); a.unshift(first); }
+  else if (a.length > 1 && a[0].n === lastN) a.push(a.shift()); // never the card that was just swiped
   return a;
 }
 function makeCard(e){
@@ -46,8 +58,19 @@ function makeCard(e){
    <div class="foot"><small>${esc(e.hook)}</small><b>${esc(e.co)}</b></div>`;
   return el;
 }
+/* End-of-round card: sits under the last question of the round */
+function makeEnd(){
+  const el = document.createElement("article"); el.className = "card end"; el._end = true;
+  const n = saved.length;
+  el.innerHTML = `<div class="ep"><span>ครบรอบ</span></div>
+   <div class="endc"><h2><span class="ln">คุณปัดครบ</span><span class="ln">ทุกคำถามแล้ว</span></h2>
+   <p>${n ? `เก็บไว้ฟัง ${n} ตอน ฟังต่อกันได้เลย` : "ยังไม่ได้เก็บตอนไหนไว้ ลองปัดอีกรอบ<br>แล้วปัดขวาคำถามที่อยากฟังคำตอบ"}</p></div>
+   <div class="btns col">${n ? `<button class="btn light" data-end="saved">ฟังที่เก็บไว้ (${n} ตอน)</button>` : ""}
+   <button class="btn ghost" data-end="again">ปัดอีกรอบ</button></div>`;
+  return el;
+}
 const live = () => [...deck.querySelectorAll(".card:not(.gone)")];
-const topCard = () => live().pop();
+const topCard = () => { const t = live().pop(); return t && t._ep ? t : null; };
 
 /* One font size for the whole deck: the largest at which every question (each line of episodes.json on one row)
    fits the card. Shared so cards never jump between sizes. Recomputed only when the card size changes.
@@ -71,7 +94,7 @@ function deckFont(){
   return s;
 }
 function fit(c){
-  if (!c.clientWidth) return;
+  if (!c.clientWidth || c._end) return;
   const q = c.querySelector(".q");
   q.classList.remove("wrap");
   q.style.fontSize = deckFont() + "px";
@@ -92,6 +115,13 @@ function layout(){
   const t = topCard();
   if (t) { bind(t); try { history.replaceState(null, "", "#ep-" + t._ep.n); } catch (_) {} }
   if (t && !t._shown) { t._shown = true; animateQuestion(t); }
+  const end = !t && deck.querySelector(".card.end:not(.gone)");
+  document.querySelector(".app").classList.toggle("ended", !!end);
+  if (end && !end._shown) {
+    end._shown = true; animateQuestion(end);
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (_) {}
+    track("deck_complete", null, { seen: seen.length, saved: saved.length });
+  }
   markPlaying();
 }
 
@@ -99,8 +129,8 @@ function layout(){
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function animateQuestion(c){
   if (reduceMotion.matches || !c.animate) return;
-  c.querySelector(".q").getAnimations({ subtree: true }).forEach(a => a.cancel());
-  c.querySelectorAll(".q .ln").forEach((l, i) => l.animate(
+  c.querySelector(".q, .endc").getAnimations({ subtree: true }).forEach(a => a.cancel());
+  c.querySelectorAll(".q .ln, .endc .ln").forEach((l, i) => l.animate(
     [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
     { duration: 420, delay: i * 70, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }));
 }
@@ -108,11 +138,20 @@ function fill(first){
   while (live().length < 3) {
     if (!pile.length) pile = shuffle(first);
     first = null;
+    if (!pile.length) { if (!deck.querySelector(".card.end:not(.gone)")) deck.prepend(makeEnd()); break; }
     const c = makeCard(pile.shift()); deck.prepend(c); fit(c);
   }
   layout();
 }
 function restart(first){ deck.innerHTML = ""; pile = []; fill(first); }
+function newRound(){
+  seen = []; persistSeen(); restart();
+  track("restart_round", null, { saved: saved.length });
+}
+deck.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-end]"); if (!b) return;
+  if (b.dataset.end === "saved") openSaved(); else newRound();
+});
 
 function bind(c){
   if (c._bound) return; c._bound = true;
@@ -144,6 +183,8 @@ function fling(c, dir, dy = 0, method = "button"){
   c.style.transform = `translate(${dir * innerWidth * 1.2}px,${dy * .4 + 40}px) rotate(${dir * 28}deg)`; c.style.opacity = 0;
   setTimeout(() => c.remove(), 400);
   track(dir > 0 ? "swipe_right" : "swipe_left", c._ep, { method });
+  if (!seen.includes(c._ep.n)) { seen.push(c._ep.n); persistSeen(); }
+  lastN = c._ep.n;
   if (dir > 0) save(c._ep);
   fill();
 }
@@ -151,7 +192,11 @@ function fling(c, dir, dy = 0, method = "button"){
 /* ---------- UI helpers ---------- */
 function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("on"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("on"), 1800); }
 function save(e){ if (!saved.includes(e.n)) { saved.unshift(e.n); persist(); } toast("เก็บ EP." + e.n + " ไว้ฟังแล้ว"); renderCount(); }
-function renderCount(){ $("savedN").textContent = saved.length; }
+function renderCount(){
+  $("savedN").textContent = saved.length;
+  const end = deck.querySelector(".card.end:not(.gone)"); // keep the end card's saved count current
+  if (end) { const c = makeEnd(); c._shown = true; end.replaceWith(c); layout(); }
+}
 
 function openSheet(html, kind){
   $("sheetBody").innerHTML = '<div class="grab"></div>' + html;
@@ -279,7 +324,7 @@ function nextSaved(e){
   return list.find(x => x !== e) || null;
 }
 function markPlaying(){
-  live().forEach(c => { c.querySelector(".now").textContent = player.ep === c._ep && $("player").classList.contains("on") ? "กำลังฟัง ♪" : ""; });
+  live().forEach(c => { if (c._ep) c.querySelector(".now").textContent = player.ep === c._ep && $("player").classList.contains("on") ? "กำลังฟัง ♪" : ""; });
 }
 $("pClose").onclick = () => {
   if (player.ctrl) player.ctrl.pause();

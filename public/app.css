@@ -34,6 +34,15 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
 .card .foot{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px}
 .card .foot small{font-size:12px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card .foot b{font-weight:600;font-size:14px}
+.card.end{cursor:default;background:var(--ink2);border:1px solid var(--line)}
+.endc{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;text-align:center}
+.endc h2{margin:0;font-size:28px;font-weight:600;line-height:1.35}
+.endc h2 .ln{display:block}
+.endc p{margin:0;font-size:14px;line-height:1.6;color:var(--muted)}
+.btns.col{flex-direction:column;align-items:stretch}
+.btns.col .btn{justify-content:center}
+.btn.light{background:var(--paper);color:var(--brand)}
+.app.ended .act{opacity:.35;pointer-events:none}
 .stamp{position:absolute;top:56px;padding:4px 12px;border:3px solid;border-radius:10px;font:600 22px var(--body);opacity:0;z-index:2;pointer-events:none}
 .stamp.yes{left:20px;color:var(--paper);border-color:var(--paper);transform:rotate(-12deg)}
 .stamp.no{right:20px;color:var(--ink);border-color:var(--ink);transform:rotate(12deg)}
