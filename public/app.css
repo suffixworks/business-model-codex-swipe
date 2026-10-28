@@ -15,7 +15,7 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
   padding-top:14px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .brand{display:flex;flex-direction:column;gap:3px;min-width:0;text-decoration:none;color:inherit}
-.logo{height:18px;width:auto;max-width:100%;display:block}
+.logo{width:240px;max-width:100%;height:auto;display:block}
 .by{font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
 .sbtn{font:500 13px var(--body);color:var(--paper);background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .sbtn b{color:var(--brand);font-weight:600;margin-left:4px;font-variant-numeric:tabular-nums}

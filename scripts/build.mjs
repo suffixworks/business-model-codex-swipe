@@ -14,7 +14,7 @@ const run = promisify(execFile);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
 const OG_CACHE = join(ROOT, "scripts/og-cache.json");
-const OG_VERSION = 5; // bump when the OG template changes
+const OG_VERSION = 6; // bump when the OG template changes
 const CHROME = process.env.CHROME_PATH || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const config = JSON.parse(await readFile(join(ROOT, "site.config.json"), "utf8"));
@@ -81,7 +81,7 @@ for (const e of eps) {
 
 // ---------- OG images ----------
 const fontUrl = pathToFileURL(join(ROOT, "scripts/assets/Anuphan.ttf")).href;
-const markUrl = pathToFileURL(join(PUB, "img/wordmark.png")).href;
+const markUrl = pathToFileURL(join(PUB, "img/wordmark.svg")).href;
 const ogPage = body => `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Anuphan;src:url("${fontUrl}");font-weight:100 900}
 *{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
@@ -145,7 +145,7 @@ if (todo.length) {
 for (const name of Object.keys(cache)) if (!jobs.some(j => j.name === name)) { delete cache[name]; await rm(join(PUB, "og", name + ".png"), { force: true }); }
 
 // ---------- service worker: cache name follows the app files, so a deploy refreshes clients ----------
-const shell = ["index.html", "app.js", "app.css", "episodes.js", "config.js", "img/wordmark.png", "manifest.webmanifest"];
+const shell = ["index.html", "app.js", "app.css", "episodes.js", "config.js", "img/wordmark.svg", "manifest.webmanifest"];
 let sig = "";
 for (const f of shell) sig += await readFile(join(PUB, f), "utf8").catch(() => "");
 const sw = (await readFile(join(ROOT, "scripts/sw.template.js"), "utf8"))

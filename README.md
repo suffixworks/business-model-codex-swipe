@@ -12,7 +12,7 @@
 - `public/og/<n>.png` ภาพ OG ของแต่ละคำถาม (สร้างโดย build)
 - `scripts/build.mjs` สร้าง episodes.js, config.js, หน้า /ep, ภาพ OG, sw.js
 - `scripts/sync-episodes.mjs` ดึงตอนใหม่จาก Spotify
-- `scripts/make-brand-assets.py` ตัดโลโก้และทำ favicon / app icon จาก `scripts/assets/logo-source.jpg`
+- `scripts/make-brand-assets.mjs` ทำ wordmark.svg, favicon และ app icon จากโลโก้ vector `scripts/assets/logo-source.svg` (`npm run brand`)
 
 ## คำสั่ง
 ```

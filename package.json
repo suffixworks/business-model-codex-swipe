@@ -8,6 +8,6 @@
     "build:og": "node scripts/build.mjs --og-all",
     "sync": "node scripts/sync-episodes.mjs",
     "dev": "node scripts/serve.mjs",
-    "brand": "python3 scripts/make-brand-assets.py"
+    "brand": "node scripts/make-brand-assets.mjs"
   }
 }
