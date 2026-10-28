@@ -49,7 +49,7 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
 .act:focus-visible,.sbtn:focus-visible,.btn:focus-visible,.pclose:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
 .legend{text-align:center;font-size:12px;color:var(--muted);margin-top:-6px}
 
-/* Mini player: the single Spotify embed lives here for the whole session. Collapsed it keeps its size off-screen so the iframe stays loaded */
+/* Mini player (compact 80px embed so the cards keep their size): the single Spotify embed lives here for the whole session. Collapsed it keeps its size off-screen so the iframe stays loaded */
 .player{display:flex;flex-direction:column;gap:8px}
 .player:not(.on){position:absolute;left:-9999px;top:0;width:340px;visibility:hidden}
 .pbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
@@ -61,11 +61,12 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
 .phint{display:none;line-height:1.5;background:var(--paper);color:var(--ink);font-size:13px;font-weight:500;border-radius:12px;padding:8px 12px;text-align:center}
 .player.hint .phint{display:block}
 .phint a{color:inherit;font-weight:600}
-.pframe{height:152px;border-radius:12px;overflow:hidden;background:var(--ink2)}
-.pframe iframe{display:block;width:100%;height:152px;border:0}
+.pframe{height:80px;border-radius:12px;overflow:hidden;background:var(--ink2)}
+.pframe iframe{display:block;width:100%;height:80px;border:0}
 .app.playing{gap:10px}
 .app.playing .legend{display:none}
 .app.playing .act{width:52px;height:52px} .app.playing .act.play{width:62px;height:62px}
+/* While playing the deck is shorter: drop the hook line (the company stays) so questions keep the same size */
 @media (max-height:760px){.app.playing .card .foot small{display:none}.app.playing .card .q p{line-height:1.35}.app.playing .card{padding:18px 20px 16px}}
 
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 60px);transform:translate(-50%,-10px);background:var(--paper);color:var(--ink);

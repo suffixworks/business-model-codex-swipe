@@ -49,19 +49,35 @@ function makeCard(e){
 const live = () => [...deck.querySelectorAll(".card:not(.gone)")];
 const topCard = () => live().pop();
 
-/* Largest font size at which every line from episodes.json fits on one row and the question fits the card.
+/* One font size for the whole deck: the largest at which every question (each line of episodes.json on one row)
+   fits the card. Shared so cards never jump between sizes. Recomputed only when the card size changes.
    Only if the screen is too narrow even at the minimum size do lines get to wrap. */
-function fit(c){
-  const q = c.querySelector(".q"), w = c.clientWidth;
-  if (!w) return;
-  q.classList.remove("wrap");
-  let s = Math.round(Math.min(25, Math.max(19, w * 0.066)));
+const FONT_MIN = 14;
+let fontKey = "", fontSize = 0;
+function largestFit(c){
+  const q = c.querySelector(".q");
   const over = () => q.scrollWidth > q.clientWidth + 1 || q.scrollHeight > q.clientHeight + 1;
+  let s = Math.round(Math.min(25, Math.max(19, c.clientWidth * 0.066)));
   q.style.fontSize = s + "px";
-  while (over() && s > 14) { s -= 1; q.style.fontSize = s + "px"; }
+  while (over() && s > FONT_MIN) { s -= 1; q.style.fontSize = s + "px"; }
+  return s;
+}
+function deckFont(){
+  const key = deck.clientWidth + "x" + deck.clientHeight + ":" + document.querySelector(".app").className;
+  if (key === fontKey) return fontSize;
+  let s = 99;
+  for (const e of EP) { const c = makeCard(e); c.style.visibility = "hidden"; deck.prepend(c); s = Math.min(s, largestFit(c)); c.remove(); }
+  fontKey = key; fontSize = s;
+  return s;
+}
+function fit(c){
+  if (!c.clientWidth) return;
+  const q = c.querySelector(".q");
+  q.classList.remove("wrap");
+  q.style.fontSize = deckFont() + "px";
   if (q.scrollWidth > q.clientWidth + 1) q.classList.add("wrap");
 }
-const fitAll = () => live().forEach(fit);
+const fitAll = () => { fontKey = ""; live().forEach(fit); };
 
 function layout(){
   const cs = live();
@@ -173,7 +189,7 @@ const player = { ctrl: null, ep: null, wantPlay: false, isPaused: true, pos: 0, 
 
 window.onSpotifyIframeApiReady = api => {
   const first = topCard() ? topCard()._ep : EP[0];
-  api.createController($("embed"), { uri: "spotify:episode:" + first.id, width: "100%", height: 152 }, ctrl => {
+  api.createController($("embed"), { uri: "spotify:episode:" + first.id, width: "100%", height: 80 }, ctrl => {
     player.ctrl = ctrl;
     ctrl.addListener("playback_update", onPlayback);
     if (player.queued) { const q = player.queued; player.queued = null; play(q.e, q.source); }
