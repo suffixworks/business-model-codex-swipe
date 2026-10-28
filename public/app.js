@@ -99,6 +99,7 @@ function layout(){
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function animateQuestion(c){
   if (reduceMotion.matches || !c.animate) return;
+  c.querySelector(".q").getAnimations({ subtree: true }).forEach(a => a.cancel());
   c.querySelectorAll(".q .ln").forEach((l, i) => l.animate(
     [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
     { duration: 420, delay: i * 70, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }));
@@ -278,12 +279,28 @@ $("pClose").onclick = () => {
   markPlaying(); requestAnimationFrame(fitAll);
 };
 
+/* ---------- First-visit tutorial ---------- */
+const TUT_KEY = "bmc-tutorial-done";
+let tutDone = true;
+try { tutDone = localStorage.getItem(TUT_KEY) === "1"; } catch (_) {}
+const tutOpen = () => !$("tut").hidden;
+function closeTutorial(){
+  $("tut").hidden = true;
+  try { localStorage.setItem(TUT_KEY, "1"); } catch (_) {}
+  track("tutorial_done");
+  if (topCard()) animateQuestion(topCard()); // the first card animated behind the overlay, so play it again now it's visible
+}
+if (!tutDone) { $("tut").hidden = false; $("tutClose").focus(); }
+$("tutClose").onclick = closeTutorial;
+$("tut").addEventListener("click", e => { if (e.target === $("tut")) closeTutorial(); });
+
 /* ---------- Wiring ---------- */
 $("savedBtn").onclick = openSaved; $("scrim").onclick = closeSheet;
 $("bSkip").onclick = () => fling(topCard(), -1);
 $("bSave").onclick = () => fling(topCard(), 1);
 $("bPlay").onclick = () => { const t = topCard(); if (t) play(t._ep, "card"); };
 addEventListener("keydown", e => {
+  if (tutOpen()) { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); closeTutorial(); } return; }
   if ($("sheet").classList.contains("on")) { if (e.key === "Escape") closeSheet(); return; }
   if (e.key === "ArrowRight") fling(topCard(), 1, 0, "key");
   if (e.key === "ArrowLeft") fling(topCard(), -1, 0, "key");

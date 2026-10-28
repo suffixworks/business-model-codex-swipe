@@ -44,7 +44,6 @@
     <button class="act play" id="bPlay" aria-label="ฟังตอนนี้เลย"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></button>
     <button class="act save" id="bSave" aria-label="เก็บไว้ฟังทีหลัง"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></button>
   </div>
-  <div class="legend">ปัดขวา เก็บไว้ฟัง · ปัดซ้าย ข้าม · แตะการ์ดดูรายละเอียด</div>
   <section class="player" id="player" aria-label="ตัวเล่น">
     <div class="pbar">
       <span class="pnow" id="pNow"></span>
@@ -54,6 +53,18 @@
     <div class="pframe"><div id="embed"></div></div>
   </section>
   <footer class="credit">Develop by <a href="https://suffix.works" target="_blank" rel="noopener">SUFFIX</a></footer>
+</div>
+<div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tutTitle" hidden>
+  <div class="tut-box">
+    <div class="lbl" id="tutTitle">วิธีใช้</div>
+    <ul class="tut-list">
+      <li><span class="tut-ic skip"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span><b>ปัดซ้าย</b> ข้ามคำถามนี้</span></li>
+      <li><span class="tut-ic save"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></span><span><b>ปัดขวา</b> เก็บไว้ฟังทีหลัง</span></li>
+      <li><span class="tut-ic tap"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/></svg></span><span><b>แตะการ์ด</b> ดูรายละเอียดตอน</span></li>
+      <li><span class="tut-ic play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span><b>กด ▶</b> ฟังได้ทันทีในหน้านี้</span></li>
+    </ul>
+    <button class="btn sp" id="tutClose">เริ่มปัดเลย</button>
+  </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <div class="scrim" id="scrim"></div>
