@@ -1,0 +1,13 @@
+{
+  "name": "business-model-codex-swipe",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:og": "node scripts/build.mjs --og-all",
+    "sync": "node scripts/sync-episodes.mjs",
+    "dev": "node scripts/serve.mjs",
+    "brand": "python3 scripts/make-brand-assets.py"
+  }
+}

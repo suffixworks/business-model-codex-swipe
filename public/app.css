@@ -1,0 +1,106 @@
+/* Layout: one-screen app. Wordmark bar / stacked question cards in the artwork's orange (drag to fling, Tinder-style) / three action buttons / Spotify mini player. Bottom sheet for episode detail and the saved list */
+:root{
+  --ink:#1c100b; --ink2:#2a1912; --paper:#fff7f1; --muted:rgba(255,247,241,.72); --line:rgba(255,247,241,.24);
+  --brand:#dd492f; --brand-deep:#b9361f; --spotify:#1ed760;
+  --body:"Anuphan","Noto Sans Thai","Sukhumvit Set",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.app{flex:1;min-height:0;width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:14px;
+  padding-top:14px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;flex-direction:column;gap:3px;min-width:0;text-decoration:none;color:inherit}
+.logo{height:18px;width:auto;max-width:100%;display:block}
+.by{font-size:10px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
+.sbtn{font:500 13px var(--body);color:var(--paper);background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.sbtn b{color:var(--brand);font-weight:600;margin-left:4px;font-variant-numeric:tabular-nums}
+
+.deck{position:relative;flex:1;min-height:0}
+.card{position:absolute;inset:0;border-radius:22px;background:var(--brand);padding:22px 22px 20px;display:flex;flex-direction:column;
+  box-shadow:0 16px 36px rgba(0,0,0,.4);touch-action:none;will-change:transform;cursor:grab;overflow:hidden}
+.card.dragging{cursor:grabbing}
+.card .ep{font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--paper);opacity:.85;display:flex;justify-content:space-between;gap:8px}
+.card .ep .now{font-weight:500;letter-spacing:0;opacity:.9}
+.card .q{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:safe center;gap:14px;text-align:center;padding-block:12px}
+.card .q{font-size:22px}
+.card .q p{margin:0;font-weight:500;font-size:1em;line-height:1.45}
+/* One line of episodes.json per row. Lines never wrap unless the screen is too narrow even at the smallest size (.wrap) */
+.card .q p span{display:block;white-space:nowrap}
+.card .q.wrap p span{white-space:normal}
+.card .foot{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:12px}
+.card .foot small{font-size:12px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .foot b{font-weight:600;font-size:14px}
+.stamp{position:absolute;top:56px;padding:4px 12px;border:3px solid;border-radius:10px;font:600 22px var(--body);opacity:0;z-index:2;pointer-events:none}
+.stamp.yes{left:20px;color:var(--paper);border-color:var(--paper);transform:rotate(-12deg)}
+.stamp.no{right:20px;color:var(--ink);border-color:var(--ink);transform:rotate(12deg)}
+
+.actions{display:flex;justify-content:center;align-items:center;gap:22px}
+.act{width:60px;height:60px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,0,0,.35);transition:transform .12s}
+.act:active{transform:scale(.92)}
+.act svg{width:24px;height:24px}
+.act.skip{background:var(--ink2);border:1px solid var(--line)} .act.skip svg{stroke:var(--paper);stroke-width:2.4;fill:none;stroke-linecap:round}
+.act.play{background:var(--spotify);width:72px;height:72px} .act.play svg{fill:#0b0b0b;margin-left:3px;width:26px;height:26px}
+.act.save{background:var(--paper)} .act.save svg{fill:var(--brand)}
+.act:focus-visible,.sbtn:focus-visible,.btn:focus-visible,.pclose:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+.legend{text-align:center;font-size:12px;color:var(--muted);margin-top:-6px}
+
+/* Mini player: the single Spotify embed lives here for the whole session. Collapsed it keeps its size off-screen so the iframe stays loaded */
+.player{display:flex;flex-direction:column;gap:8px}
+.player:not(.on){position:absolute;left:-9999px;top:0;width:340px;visibility:hidden}
+.pbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.pnow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pnow b{color:var(--paper);font-weight:600}
+.pbar .open{color:var(--spotify);font-weight:600;text-decoration:none;white-space:nowrap}
+.pbar .tools{display:flex;align-items:center;gap:10px;flex:none}
+.pclose{background:none;border:1px solid var(--line);color:var(--paper);border-radius:999px;font:500 12px var(--body);padding:3px 10px;cursor:pointer}
+.phint{display:none;line-height:1.5;background:var(--paper);color:var(--ink);font-size:13px;font-weight:500;border-radius:12px;padding:8px 12px;text-align:center}
+.player.hint .phint{display:block}
+.phint a{color:inherit;font-weight:600}
+.pframe{height:152px;border-radius:12px;overflow:hidden;background:var(--ink2)}
+.pframe iframe{display:block;width:100%;height:152px;border:0}
+.app.playing{gap:10px}
+.app.playing .legend{display:none}
+.app.playing .act{width:52px;height:52px} .app.playing .act.play{width:62px;height:62px}
+@media (max-height:760px){.app.playing .card .foot small{display:none}.app.playing .card .q p{line-height:1.35}.app.playing .card{padding:18px 20px 16px}}
+
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 60px);transform:translate(-50%,-10px);background:var(--paper);color:var(--ink);
+  font-size:13px;font-weight:500;padding:8px 14px;border-radius:999px;opacity:0;transition:.2s;z-index:40;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--ink2);border-radius:22px 22px 0 0;max-height:86%;overflow-y:auto;
+  transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+  padding-top:10px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
+  padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));user-select:text;-webkit-user-select:text}
+.sheet.on{transform:none}
+.wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.grab{width:40px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 4px}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--brand)}
+.sq{margin:0;font-size:17px;line-height:1.6;font-weight:500}
+.sq span{display:block}
+.sq span+span{margin-top:8px}
+.ep-box{border-left:3px solid var(--brand);padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:4px}
+.ep-box p{margin:0;font-size:15px;line-height:1.6}
+.ep-box b{font-size:13px;font-weight:600;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:11px 16px;font:600 14px var(--body);cursor:pointer;text-decoration:none}
+.btn.sp{background:var(--spotify);color:#0b0b0b}
+.btn.ghost{background:none;color:var(--paper);border:1px solid var(--line)}
+.btn:disabled{opacity:.55;cursor:default}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.list li.cur .n::after{content:" ♪"}
+.list .n{font-size:12px;font-weight:600;color:var(--brand);min-width:44px;padding-top:2px;font-variant-numeric:tabular-nums}
+.list .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+.list .t span{font-size:14px;line-height:1.5}
+.list .t small{font-size:12px;color:var(--muted)}
+.list .go{background:none;border:0;color:var(--spotify);font:600 13px var(--body);white-space:nowrap;padding:2px 0 0;cursor:pointer}
+.list .rm{background:none;border:0;color:var(--muted);font:500 12px var(--body);cursor:pointer;padding:2px 0 0}
+.note{color:var(--muted);font-size:13px;line-height:1.6;margin:0}
+.empty{color:var(--muted);font-size:14px;margin:0}
+@media (prefers-reduced-motion:reduce){.sheet,.scrim,.toast{transition:none}}

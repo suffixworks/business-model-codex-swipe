@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Business Model Codex Swipe</title>
+<meta name="description" content="ปัดคำถามธุรกิจสำหรับเจ้าของ SME แล้วกดฟังตอนที่ตอบคำถามนั้นได้ทันที จาก podcast Business Model Codex by SUFFIX">
+<meta name="theme-color" content="#1c100b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Business Model Codex">
+<meta property="og:locale" content="th_TH">
+<meta property="og:title" content="Business Model Codex Swipe">
+<meta property="og:description" content="ปัดคำถามธุรกิจ แล้วกดฟังตอนที่ตอบคำถามนั้นได้ทันที">
+<meta property="og:image" content="https://business-model-codex-swipe.pages.dev/og/default.png">
+<meta property="og:url" content="https://business-model-codex-swipe.pages.dev/">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-48.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Codex Swipe">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://open.spotify.com">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="brand" href="/" aria-label="Business Model Codex by SUFFIX">
+      <img class="logo" src="/img/wordmark.png" alt="business model codex" width="1128" height="85">
+      <span class="by">by SUFFIX</span>
+    </a>
+    <button class="sbtn" id="savedBtn">เก็บไว้ฟัง<b id="savedN">0</b></button>
+  </header>
+  <main class="deck" id="deck" aria-live="polite"></main>
+  <div class="actions">
+    <button class="act skip" id="bSkip" aria-label="ข้ามคำถามนี้"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="act play" id="bPlay" aria-label="ฟังตอนนี้เลย"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></button>
+    <button class="act save" id="bSave" aria-label="เก็บไว้ฟังทีหลัง"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z"/></svg></button>
+  </div>
+  <div class="legend">ปัดขวา เก็บไว้ฟัง · ปัดซ้าย ข้าม · แตะการ์ดดูรายละเอียด</div>
+  <section class="player" id="player" aria-label="ตัวเล่น">
+    <div class="pbar">
+      <span class="pnow" id="pNow"></span>
+      <span class="tools"><a class="open" id="pOpen" href="#" target="_blank" rel="noopener">เปิดใน Spotify</a><button class="pclose" id="pClose" aria-label="ปิดตัวเล่น">ปิด</button></span>
+    </div>
+    <div class="phint" id="pHint" role="status">แตะปุ่ม ▶ ในตัวเล่นด้านล่างเพื่อเริ่มฟัง</div>
+    <div class="pframe"><div id="embed"></div></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="รายละเอียด"><div class="wrap" id="sheetBody"></div></section>
+
+<script src="/config.js"></script>
+<script src="/episodes.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
