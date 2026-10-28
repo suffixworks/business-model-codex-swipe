@@ -35,5 +35,5 @@ push ขึ้น `main` แล้ว `.github/workflows/pages.yml` จะ deplo
 ต่อโดเมนจริงแล้ว แก้ `siteUrl` ใน `site.config.json` รัน `npm run build` แล้ว push
 
 ## GA4 events
-`swipe_right`, `swipe_left` (method: drag / button / key), `open_detail`, `play` (source: card / detail / saved / auto), `complete`, `preview_end`, `share`, `tutorial_done`
+`swipe_right`, `swipe_left` (method: drag / button / key), `open_detail`, `play` (source: card / detail / saved / auto), `complete`, `preview_end`, `share`, `tutorial_done`, `clear_saved` (count)
 ทุก event มี `episode_number` และ `company`

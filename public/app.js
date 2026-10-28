@@ -177,7 +177,7 @@ function openSaved(){
       <button class="go" data-play="${e.n}">ฟัง ▶</button></li>`).join("")}</ul>
       <p class="note">ฟังจบหนึ่งตอน ตอนถัดไปในรายการนี้จะเล่นต่อให้เอง</p>`
     : `<p class="empty">ยังไม่มีตอนที่เก็บไว้ ปัดการ์ดไปทางขวาเพื่อเก็บคำถามที่อยากฟังคำตอบ</p>`) +
-    `<div class="btns"><a class="btn ghost" href="${SHOW}" target="_blank" rel="noopener">ฟังทุกตอนบน Spotify</a></div>`, "saved");
+    `<div class="btns"><a class="btn ghost" href="${SHOW}" target="_blank" rel="noopener">ฟังทุกตอนบน Spotify</a>${items.length ? `<button class="btn ghost danger" data-clear>ล้างทั้งหมด</button>` : ""}</div>`, "saved");
 }
 async function share(e){
   const url = shareUrl(e), text = e.q.map(p => p.join(" ")).join(" ");
@@ -191,6 +191,15 @@ $("sheetBody").addEventListener("click", ev => {
   const s = ev.target.closest("[data-save]"), r = ev.target.closest("[data-rm]"), p = ev.target.closest("[data-play]"), sh = ev.target.closest("[data-share]");
   if (s) { save(byN(+s.dataset.save)); s.textContent = "เก็บไว้แล้ว"; s.disabled = true; }
   if (r) { saved = saved.filter(n => n !== +r.dataset.rm); persist(); renderCount(); openSaved(); }
+  // Clearing the whole list takes a second tap, so one stray touch can't wipe it
+  const cl = ev.target.closest("[data-clear]");
+  if (cl && !cl.dataset.armed) {
+    cl.dataset.armed = "1"; cl.textContent = "แตะอีกครั้งเพื่อล้าง";
+    clearTimeout(cl._t); cl._t = setTimeout(() => { delete cl.dataset.armed; cl.textContent = "ล้างทั้งหมด"; }, 3000);
+  } else if (cl) {
+    track("clear_saved", null, { count: saved.length });
+    saved = []; persist(); renderCount(); openSaved(); toast("ล้างรายการเก็บไว้ฟังแล้ว");
+  }
   if (p) { const kind = $("sheet").dataset.kind; play(byN(+p.dataset.play), kind === "saved" ? "saved" : "detail"); closeSheet(); }
   if (sh) share(byN(+sh.dataset.share));
 });
