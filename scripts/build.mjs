@@ -67,11 +67,11 @@ for (const e of eps) {
 <meta property="og:image:alt" content="${esc(title)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1c100b">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<script>location.replace("/#ep-${e.n}")</script>
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<script>location.replace("../../#ep-${e.n}")</script>
 </head>
 <body style="background:#1c100b;color:#fff7f1;font-family:system-ui,sans-serif;padding:24px">
-<p><a style="color:#fff7f1" href="/#ep-${e.n}">เปิดคำถาม EP.${e.n}</a></p>
+<p><a style="color:#fff7f1" href="../../#ep-${e.n}">เปิดคำถาม EP.${e.n}</a></p>
 </body>
 </html>
 `;
@@ -150,7 +150,7 @@ let sig = "";
 for (const f of shell) sig += await readFile(join(PUB, f), "utf8").catch(() => "");
 const sw = (await readFile(join(ROOT, "scripts/sw.template.js"), "utf8"))
   .replace("__VERSION__", hash(sig))
-  .replace("__SHELL__", JSON.stringify(["/", ...shell.filter(f => f !== "index.html").map(f => "/" + f), "/icons/icon-192.png"]));
+  .replace("__SHELL__", JSON.stringify(["./", ...shell.filter(f => f !== "index.html"), "icons/icon-192.png"]));
 await writeFile(join(PUB, "sw.js"), sw);
 
 console.log(`built ${eps.length} episodes, ${todo.length} OG image(s) rendered, site ${site}`);

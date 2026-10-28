@@ -27,11 +27,12 @@ npm run sync -- --dry-run
 2. ใส่คำถามใน `q` เอง (ตอนที่ q ว่างจะยังไม่ขึ้นบนเว็บ)
 3. `npm run build` แล้ว commit และ push
 
-## Deploy (Cloudflare Pages)
-- Connect to Git เลือก repo นี้ (ล็อกอิน GitHub ด้วยบัญชี suffixworks)
-- Build command: เว้นว่าง
-- Build output directory: `public`
-- ต่อโดเมนแล้ว แก้ `siteUrl` ใน `site.config.json` เป็นโดเมนจริง รัน `npm run build` แล้ว push
+## Deploy
+ตอนนี้: GitHub Pages ที่ https://suffixworks.github.io/business-model-codex-swipe/
+push ขึ้น `main` แล้ว `.github/workflows/pages.yml` จะ deploy โฟลเดอร์ `public/` ให้เอง
+
+ทุก path ในเว็บเป็นแบบ relative จึงย้ายไปโดเมนอื่นหรือ Cloudflare Pages ได้โดยไม่ต้องแก้โค้ด
+ต่อโดเมนจริงแล้ว แก้ `siteUrl` ใน `site.config.json` รัน `npm run build` แล้ว push
 
 ## GA4 events
 `swipe_right`, `swipe_left` (method: drag / button / key), `open_detail`, `play` (source: card / detail / saved / auto), `complete`, `preview_end`, `share`

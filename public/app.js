@@ -6,7 +6,7 @@ const SHOW = CONFIG.showUrl || "https://open.spotify.com/show/72769c7eiWc88azlyo
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const spotifyUrl = e => "https://open.spotify.com/episode/" + e.id;
-const shareUrl = e => location.origin + "/ep/" + e.n + "/";
+const shareUrl = e => new URL("ep/" + e.n + "/", document.baseURI).href;
 const byN = n => EP.find(e => e.n === n);
 const deck = $("deck");
 let pile = [], saved = [];
@@ -286,6 +286,6 @@ addEventListener("hashchange", () => { const e = hashEp(); if (e && (!topCard() 
 let rT = 0; addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(fitAll, 120); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 
-if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("/sw.js").catch(() => {});
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 
 renderCount(); fill(hashEp());
