@@ -42,7 +42,7 @@ function makeCard(e){
   const el = document.createElement("article"); el.className = "card"; el._ep = e;
   el.innerHTML = `<div class="stamp yes">เก็บไว้ฟัง</div><div class="stamp no">ข้าม</div>
    <div class="ep"><span>EP.${e.n}</span><span class="now"></span></div>
-   <div class="q">${e.q.map(p => `<p>${p.map(l => `<span class="ln"><span>${esc(l)}</span></span>`).join("")}</p>`).join("")}</div>
+   <div class="q">${e.q.map(p => `<p>${p.map(l => `<span class="ln">${esc(l)}</span>`).join("")}</p>`).join("")}</div>
    <div class="foot"><small>${esc(e.hook)}</small><b>${esc(e.co)}</b></div>`;
   return el;
 }
@@ -95,38 +95,14 @@ function layout(){
   markPlaying();
 }
 
-/* ---------- Question text animation, played once when a card reaches the top ----------
-   Still being chosen: ?anim=a|b|c|d turns one on and shows a switcher to compare them. Off by default. */
-const ANIMS = {
-  a: { label: "ลอยขึ้น", run: q => lines(q).forEach((l, i) => l.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: i * 70, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" })) },
-  b: { label: "ม่านเปิด", mask: true, run: q => lines(q).forEach((l, i) => l.firstChild.animate([{ transform: "translateY(140%)" }, { transform: "none" }], { duration: 520, delay: i * 80, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" })) },
-  c: { label: "ชัดจากเบลอ", run: q => lines(q).forEach((l, i) => l.animate([{ opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 520, delay: i * 60, easing: "ease-out", fill: "backwards" })) },
-  d: { label: "ทีละย่อหน้า", run: q => [...q.querySelectorAll("p")].forEach((p, i) => p.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 450, delay: i * 650, easing: "ease-out", fill: "backwards" })) },
-};
-const lines = q => [...q.querySelectorAll(".ln")];
-let anim = (/[?&]anim=([a-d])/.exec(location.search) || [])[1] || "";
+/* ---------- Question text animation: lines rise in one after another when a card reaches the top ---------- */
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function animateQuestion(c){
-  const a = ANIMS[anim];
-  if (!a || reduceMotion.matches || !c.animate) return;
-  const q = c.querySelector(".q");
-  q.getAnimations({ subtree: true }).forEach(x => x.cancel());
-  q.classList.toggle("mask", !!a.mask);
-  a.run(q);
+  if (reduceMotion.matches || !c.animate) return;
+  c.querySelectorAll(".q .ln").forEach((l, i) => l.animate(
+    [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+    { duration: 420, delay: i * 70, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" }));
 }
-function animSwitcher(){
-  const bar = document.createElement("div"); bar.className = "animbar";
-  bar.innerHTML = Object.entries(ANIMS).map(([k, a]) => `<button data-anim="${k}">${k.toUpperCase()} ${a.label}</button>`).join("");
-  const sync = () => bar.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.anim === anim));
-  bar.addEventListener("click", e => {
-    const b = e.target.closest("[data-anim]"); if (!b) return;
-    anim = b.dataset.anim; sync();
-    try { history.replaceState(null, "", "?anim=" + anim + location.hash); } catch (_) {}
-    if (topCard()) animateQuestion(topCard());
-  });
-  sync(); document.querySelector(".top").after(bar);
-}
-if (anim) animSwitcher();
 function fill(first){
   while (live().length < 3) {
     if (!pile.length) pile = shuffle(first);
