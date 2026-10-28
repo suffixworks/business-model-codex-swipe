@@ -47,7 +47,8 @@ body{background:var(--ink);color:var(--paper);font-family:var(--body);-webkit-fo
 .act.save{background:var(--paper)} .act.save svg{fill:var(--brand)}
 .act:focus-visible,.sbtn:focus-visible,.btn:focus-visible,.pclose:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
 .credit{text-align:center;font-size:11px;line-height:1.2;color:var(--muted);margin-top:-4px;letter-spacing:.02em}
-.credit a{color:var(--paper);font-weight:600;text-decoration:none;letter-spacing:.08em}
+.credit a{display:inline-block;vertical-align:baseline;text-decoration:none;margin-left:2px}
+.credit img{height:8.5px;width:auto;display:block}
 .credit a:focus-visible{outline:2px solid var(--paper);outline-offset:2px}
 
 /* Mini player (compact 80px embed so the cards keep their size): the single Spotify embed lives here for the whole session. Collapsed it keeps its size off-screen so the iframe stays loaded */

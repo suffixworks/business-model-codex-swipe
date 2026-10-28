@@ -145,7 +145,7 @@ if (todo.length) {
 for (const name of Object.keys(cache)) if (!jobs.some(j => j.name === name)) { delete cache[name]; await rm(join(PUB, "og", name + ".png"), { force: true }); }
 
 // ---------- service worker: cache name follows the app files, so a deploy refreshes clients ----------
-const shell = ["index.html", "app.js", "app.css", "episodes.js", "config.js", "img/wordmark.svg", "manifest.webmanifest"];
+const shell = ["index.html", "app.js", "app.css", "episodes.js", "config.js", "img/wordmark.svg", "img/suffix.svg", "manifest.webmanifest"];
 let sig = "";
 for (const f of shell) sig += await readFile(join(PUB, f), "utf8").catch(() => "");
 const sw = (await readFile(join(ROOT, "scripts/sw.template.js"), "utf8"))
