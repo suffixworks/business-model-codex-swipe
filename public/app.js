@@ -150,7 +150,7 @@ function openSaved(){
       <button class="go" data-play="${e.n}">ฟัง ▶</button></li>`).join("")}</ul>
       <p class="note">ฟังจบหนึ่งตอน ตอนถัดไปในรายการนี้จะเล่นต่อให้เอง</p>`
     : `<p class="empty">ยังไม่มีตอนที่เก็บไว้ ปัดการ์ดไปทางขวาเพื่อเก็บคำถามที่อยากฟังคำตอบ</p>`) +
-    `<div class="btns"><a class="btn ghost" href="${SHOW}" target="_blank" rel="noopener">ดูทุกตอนบน Spotify</a></div>`, "saved");
+    `<div class="btns"><a class="btn ghost" href="${SHOW}" target="_blank" rel="noopener">ฟังทุกตอนบน Spotify</a></div>`, "saved");
 }
 async function share(e){
   const url = shareUrl(e), text = e.q.map(p => p.join(" ")).join(" ");
