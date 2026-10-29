@@ -11,19 +11,11 @@ const byN = n => EP.find(e => e.n === n);
 const deck = $("deck");
 let pile = [], saved = [], seen = [], lastN = 0;
 
-/* ---------- Analytics (GA4). No measurement ID in config.js = events are dropped ---------- */
-window.dataLayer = window.dataLayer || [];
-function gtag(){ dataLayer.push(arguments); }
-if (CONFIG.ga4) {
-  const s = document.createElement("script");
-  s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(CONFIG.ga4);
-  document.head.appendChild(s);
-  gtag("js", new Date()); gtag("config", CONFIG.ga4);
-}
+/* ---------- Analytics (GA4). consent.js loads GA only after the visitor agrees; until then events are dropped ---------- */
 function track(name, e, extra){
   const p = Object.assign(e ? { episode_number: e.n, company: e.co } : {}, extra);
-  if (CONFIG.ga4) gtag("event", name, p);
-  else if (CONFIG.debug) console.debug("[track]", name, p);
+  if (window.bmcTrack) window.bmcTrack(name, p);
+  if (CONFIG.debug) console.debug("[track]", name, p);
 }
 
 /* ---------- Saved list (localStorage only) ---------- */

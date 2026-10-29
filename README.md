@@ -6,7 +6,8 @@
 
 ## โครงสร้าง
 - `episodes.json` ข้อมูลหลักของทุกตอน (n, id, q, hook, co) แก้ที่ไฟล์นี้ที่เดียว
-- `site.config.json` URL ของเว็บ (`siteUrl`), GA4 Measurement ID (`ga4`), Spotify show ID
+- `site.config.json` URL ของเว็บ (`siteUrl`), GA4 Measurement ID (`ga4`, ตอนนี้คือ G-R30B4E9TF2), Spotify show ID
+- `public/consent.js` แถบแจ้งคุกกี้ GA จะโหลดก็ต่อเมื่อผู้ใช้กด "ตกลง" (เก็บค่าที่เลือกไว้ใน localStorage `bmc-consent`) ใช้ทั้งในแอปและหน้า /ep/
 - `public/` ไฟล์เว็บ: `index.html`, `app.js`, `app.css`, manifest, icons
 - `public/ep/<n>/` หน้าสำหรับแชร์ มี OG meta ของคำถามนั้น แล้วพาไปที่ `/#ep-<n>` (สร้างโดย build)
 - `public/og/<n>.png` ภาพ OG ของแต่ละคำถาม (สร้างโดย build)
