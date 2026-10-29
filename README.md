@@ -28,7 +28,8 @@ npm run sync -- --dry-run
 3. `npm run build` แล้ว commit และ push
 
 ## Deploy
-ตอนนี้: GitHub Pages ที่ https://suffixworks.github.io/business-model-codex-swipe/
+ตอนนี้: GitHub Pages ที่ https://www.business-model-codex.com/ (โดเมนจดที่ P&T Hosting, DNS ชี้ A 4 ตัวไปที่ GitHub และ CNAME `www` ไปที่ `suffixworks.github.io`, TXT `_github-pages-challenge-suffixworks` ใช้ยืนยันโดเมน ห้ามลบ)
+ลิงก์เดิม suffixworks.github.io/business-model-codex-swipe/ จะ redirect มาที่โดเมนนี้เอง
 push ขึ้น `main` แล้ว `.github/workflows/pages.yml` จะ deploy โฟลเดอร์ `public/` ให้เอง
 
 ทุก path ในเว็บเป็นแบบ relative จึงย้ายไปโดเมนอื่นหรือ Cloudflare Pages ได้โดยไม่ต้องแก้โค้ด
