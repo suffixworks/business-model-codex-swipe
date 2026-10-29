@@ -93,7 +93,7 @@ for (const [i, e] of eps.entries()) {
 </div>
 <nav class="pn" aria-label="คำถามอื่น">${prev ? `<a class="prev" href="../${prev.n}/"><small>← EP.${prev.n}</small><span>${esc(firstLine(prev))}</span></a>` : "<span></span>"}${next ? `<a class="next" href="../${next.n}/"><small>EP.${next.n} →</small><span>${esc(firstLine(next))}</span></a>` : ""}</nav>
 </main>
-<footer class="credit">Design &amp; Development by <a href="https://suffix.works" target="_blank" rel="noopener"><img src="../../img/suffix.svg" alt="SUFFIX" width="320" height="63"></a></footer>
+<footer class="credit">Created by <a href="https://suffix.works" target="_blank" rel="noopener"><img src="../../img/suffix.svg" alt="SUFFIX" width="320" height="63"></a></footer>
 </div>
 <script>
 document.getElementById("share").onclick = async function(){
