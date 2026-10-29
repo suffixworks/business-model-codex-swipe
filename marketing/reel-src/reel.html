@@ -6,13 +6,31 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#b9361f}
-.stage{position:absolute;left:0;top:0;width:540px;height:960px;transform:scale(2);transform-origin:0 0;overflow:hidden;background:radial-gradient(120% 80% at 50% 30%,#e65a3f 0%,#dd492f 45%,#b9361f 100%);font-family:Anuphan,sans-serif;color:#fff;position:relative}
-.cap{position:absolute;left:0;right:0;top:46px;text-align:center;padding:0 30px;transition:opacity .35s,transform .35s}
-.cap.out{opacity:0;transform:translateY(-8px)}
-.cap .k{font-size:15px;font-weight:600;letter-spacing:.14em;opacity:.85;margin-bottom:8px}
-.cap .t{font-size:33px;font-weight:600;line-height:1.3}
-.phone{position:absolute;left:50%;top:178px;width:351px;height:740px;margin-left:-175.5px;border-radius:54px;background:#111;
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#1c100b}
+.stage{position:absolute;left:0;top:0;width:540px;height:960px;transform:scale(2);transform-origin:0 0;overflow:hidden;background:#1c100b;font-family:Anuphan,sans-serif;color:#fff7f1;position:relative}
+
+/* Text masks: each line sits in its own clip and rises out of it. The padding keeps Thai marks inside the clip. */
+.m{display:block;overflow:hidden;padding:.3em 0 .24em;margin:-.3em 0 -.24em}
+.l{display:block;white-space:nowrap;position:relative}
+.qm{display:inline-block}
+.bar{position:absolute;left:0;right:0;bottom:-.04em;height:.09em;border-radius:.05em;background:#dd492f;transform:scaleX(0);transform-origin:0 50%}
+
+/* Opening: a deck of cards like the app's, swiped away one by one. Each line is scaled so the block is one even width. */
+.dcard{position:absolute;left:24px;top:40px;width:492px;height:880px;border-radius:32px;z-index:5;pointer-events:none}
+.face{position:absolute;inset:0;border-radius:inherit;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.face .l{line-height:1.1;font-weight:400}
+.orange{background:radial-gradient(120% 80% at 50% 30%,#e65a3f 0%,#dd492f 45%,#b9361f 100%);color:#fff7f1}
+.ink{background:#2a1912;color:#fff7f1}
+.cream{background:#fff7f1;color:#1c100b}
+
+/* Steps */
+.top{position:absolute;left:0;right:0;top:46px;height:120px;text-align:center;padding:0 30px;z-index:4;pointer-events:none}
+.top .k{font-size:15px;font-weight:400;letter-spacing:.14em;opacity:.85;margin-bottom:8px}
+.top .t{font-size:31px;font-weight:400;line-height:1.3}
+.top .mark{width:300px;display:block;margin:22px auto 0}
+.iris{position:absolute;inset:0;z-index:3}
+.cam{position:absolute;inset:0;transform-origin:270px 548px}
+.phone{position:absolute;left:50%;top:178px;width:351px;height:740px;margin-left:-175.5px;border-radius:54px;background:#111;opacity:0;
   box-shadow:0 0 0 2px #2b2b2b inset,0 30px 60px rgba(60,10,0,.45),0 0 0 6px rgba(0,0,0,.08)}
 .screen{position:absolute;left:11px;top:11px;width:375px;height:812px;transform:scale(.877);transform-origin:0 0;border-radius:52px;overflow:hidden;background:#1c100b}
 .status{position:absolute;left:0;right:0;top:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:6px 30px 0;font:600 15px -apple-system,system-ui,sans-serif;color:#fff7f1;z-index:2}
@@ -20,41 +38,157 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#b9361f
 .bat{width:24px;height:11px;border:1.5px solid #fff7f1;border-radius:3px;position:relative}.bat::after{content:"";position:absolute;inset:1.5px;right:4px;background:#fff7f1;border-radius:1px}
 iframe{position:absolute;left:0;top:44px;width:375px;height:768px;border:0}
 .home{position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#fff7f1;opacity:.85;z-index:3}
-.finger{position:absolute;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;background:rgba(255,255,255,.55);border:2px solid rgba(255,255,255,.9);
-  box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:20;opacity:0;transition:opacity .2s,transform .12s;pointer-events:none}
-.finger.on{opacity:1}.finger.down{transform:scale(.8);background:rgba(255,255,255,.75)}
-.end{position:absolute;inset:0;background:#dd492f;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:22px;text-align:center;padding:0 40px;opacity:0;transition:opacity .6s;z-index:30;pointer-events:none}
-.end.on{opacity:1}
-.end img{width:440px}
-.end .by{font-size:18px;font-weight:600;letter-spacing:.2em;opacity:.9;margin-top:-8px}
-.end .q{font-size:30px;font-weight:600;line-height:1.35;margin-top:30px}
-.end .cta{margin-top:16px;font-size:20px;font-weight:600;background:#fff7f1;color:#dd492f;border-radius:999px;padding:12px 26px}
+.finger{position:absolute;width:0;height:0;pointer-events:none}
+
+/* End card */
+.end{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,#e65a3f 0%,#dd492f 45%,#b9361f 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 70px;clip-path:circle(0px at 270px 548px);z-index:30;pointer-events:none}
+.end .q .l{line-height:1.1;font-weight:400}
+.end .cta{margin-top:44px;font-size:22px;font-weight:600;background:#fff7f1;color:#dd492f;border-radius:999px;padding:13px 28px;transform:scale(0)}
+.end .credit{position:absolute;bottom:40px;left:0;right:0;font-size:14px}
+.end .credit .l{display:flex;justify-content:center;align-items:center;gap:7px;opacity:.85}
+.end .credit img{height:12px}
 </style>
 </head>
 <body>
-<div class="stage">
-<div class="cap" id="cap"><div class="k" id="capK"></div><div class="t" id="capT"></div></div>
-<div class="phone"><div class="screen" id="screen">
+<div class="stage" id="stage">
+<div class="top" id="top"></div>
+<div class="iris" id="iris"><div class="cam" id="cam"><div class="phone"><div class="screen" id="screen">
   <div class="status"><span>9:41</span><span class="bat"></span></div><div class="island"></div>
   <iframe id="app" src="app/index.html#ep-12" allow="autoplay; encrypted-media"></iframe>
   <div class="home"></div>
-</div></div>
+</div></div></div></div>
 <div class="end" id="end">
-  <img src="app/img/wordmark.svg" alt="">
-  <div class="by">by SUFFIX</div>
-  <div class="q">ปัดหาคำถามที่ใช่<br>แล้วฟังคำตอบจากบริษัทจริง</div>
-  <div class="cta">ลองเล่นได้ที่ลิงก์ใน Bio</div>
+  <div class="q"><span class="m"><span class="l">เริ่มตั้งคำถาม</span></span><span class="m"><span class="l">สำหรับธุรกิจคุณ</span></span></div>
+  <div class="cta">www.business-model-codex.com</div>
+  <div class="credit"><span class="m"><span class="l">Created by <img src="app/img/suffix.svg" alt="SUFFIX"></span></span></div>
 </div>
 </div>
 <div class="finger" id="finger"></div>
 <script>
 const $ = id => document.getElementById(id);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const OUT = "cubic-bezier(.2,.8,.2,1)", IN = "cubic-bezier(.6,0,.8,.3)", INOUT = "cubic-bezier(.7,0,.2,1)";
+// Closed-form spring step response sampled into a CSS linear() easing
+function spring(sec = .9, zeta = .55, w = 12){
+  const wd = w * Math.sqrt(1 - zeta * zeta), pts = [];
+  for (let i = 0; i <= 60; i++) {
+    const t = i / 60 * sec;
+    pts.push((1 - Math.exp(-zeta * w * t) * (Math.cos(wd * t) + zeta * w / wd * Math.sin(wd * t))).toFixed(4));
+  }
+  pts[60] = 1; return `linear(${pts.join(",")})`;
+}
+const SPRING = spring(), SOFT = spring(1, .78, 9), BOUNCE = spring(.9, .42, 13), POP = spring(1, .45, 12), MORPH = spring(1, .8, 10);
+const MASK_IN = { duration: 640, easing: OUT, fill: "backwards" };
+
+function lineEl(text){ const m = document.createElement("span"); m.className = "m"; m.innerHTML = `<span class="l">${text}</span>`; return m; }
+// Scale each line so every line of a block is the same width (400px: 70px side margin on the stage)
+function fitBlock(el, w = 400){ el.querySelectorAll(".l").forEach(l => { const m = l.parentNode; m.style.fontSize = "100px"; m.style.fontSize = (100 * w / l.scrollWidth) + "px"; }); }
+// Stack position k (0 = top), same spacing as the app's deck
+const pose = k => `translateY(${k * 12}px) scale(${1 - k * .045})`;
+const appDoc = () => $("app").contentDocument;
+const APP_UI = ".top,.actions,.tools,.deck .card";
+function hideApp(){ const st = appDoc().createElement("style"); st.id = "reel-hide"; st.textContent = `${APP_UI}{opacity:0}`; appDoc().head.appendChild(st);
+  document.querySelectorAll(".status,.island,.home").forEach(e => e.style.opacity = 0); }
+function popApp(){
+  const d = appDoc(), cards = [...d.querySelectorAll(".deck .card:not(.gone)")], top = cards.at(-1);
+  d.querySelectorAll(APP_UI).forEach(e => e.style.opacity = 0); d.getElementById("reel-hide").remove();
+  top.animate([{ opacity: 0, transform: "translateY(40px) scale(.6)" }, { opacity: 1, transform: top.style.transform || "none" }], { duration: 1000, easing: POP, fill: "forwards" }).finished.then(a => { a.cancel(); top.style.opacity = ""; });
+  cards.slice(0, -1).forEach(c => c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 350, fill: "forwards" }).finished.then(a => { a.cancel(); c.style.opacity = ""; }));
+  [...d.querySelectorAll(".top,.actions,.tools")].forEach((e, i) => e.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 300 + i * 80, easing: OUT, fill: "forwards" }).finished.then(a => { a.cancel(); e.style.opacity = ""; }));
+  document.querySelectorAll(".status,.island,.home").forEach(e => e.animate([{ opacity: 0 }, { opacity: e.classList.contains("home") ? .85 : 1 }], { duration: 400, delay: 200, fill: "forwards" }));
+}
+const lines = el => [...el.querySelectorAll(".l")];
+function rise(el, gap = 90, delay = 0){
+  return Promise.all(lines(el).map((l, i) => l.animate([{ transform: "translateY(140%)" }, { transform: "none" }], { ...MASK_IN, delay: delay + i * gap }).finished));
+}
+function sink(el, gap = 45){
+  return Promise.all(lines(el).map((l, i) => l.animate([{ transform: "none" }, { transform: "translateY(-140%)" }], { duration: 380, delay: i * gap, easing: IN, fill: "forwards" }).finished));
+}
+const stagePt = el => { const r = el.getBoundingClientRect(); return [(r.left + r.width / 2) / 2, (r.top + r.height / 2) / 2]; };
+
+let current = null;
 window.reel = {
-  caption(k, t){ const c = $("cap"); c.classList.add("out"); setTimeout(() => { $("capK").textContent = k; $("capT").innerHTML = t; c.classList.remove("out"); }, 350); },
-  finger(x, y, on = true, down = false){ const f = $("finger"); f.style.left = x + "px"; f.style.top = y + "px"; f.classList.toggle("on", on); f.classList.toggle("down", down); },
+  size: 40,
+  cards: [],
+  // Build the deck. Each scene: { c: "orange" | "ink" | "cream", t: [lines], blur: line index that comes into focus }
+  deck(scenes){
+    this.scenes = scenes;
+    this.cards = scenes.map((sc, i) => {
+      const c = document.createElement("div"); c.className = "dcard"; c.style.zIndex = 20 - i;
+      const f = document.createElement("div"); f.className = `face ${sc.c}`;
+      sc.t.forEach(t => f.appendChild(lineEl(t))); c.appendChild(f); $("stage").appendChild(c);
+      fitBlock(f); lines(f).forEach(l => l.style.transform = "translateY(230%)");
+      c.style.transform = pose(Math.min(i, 2)); c.style.visibility = "hidden"; return c;
+    });
+    // The app's own UI stays hidden until the last card lands in the phone
+    hideApp();
+  },
+  // Deck slides up, first card's text rises
+  async deckIn(){
+    this.cards.forEach(c => c.style.visibility = "");
+    this.cards.forEach((c, i) => c.animate([{ transform: "translateY(980px)" }, { transform: c.style.transform }], { duration: 900, delay: i * 60, easing: SPRING, fill: "backwards" }));
+    await wait(520); await this.show(0);
+  },
+  async show(i){
+    const f = this.cards[i].firstChild, blur = this.scenes[i].blur ?? -1;
+    await Promise.all(lines(f).map((l, k) => {
+      l.style.transform = "";
+      if (k === blur) l.animate([{ filter: "blur(9px)", opacity: .25 }, { filter: "blur(9px)", opacity: .25, offset: .35 }, { filter: "none", opacity: 1 }], { duration: 1600, delay: k * 70, easing: OUT, fill: "backwards" });
+      return l.animate([{ transform: "translateY(230%)" }, { transform: "none" }], { duration: 620, delay: k * 70, easing: OUT, fill: "backwards" }).finished;
+    }));
+  },
+  // App-style swipe: small pull back, a drag that builds rotation (dx/18 deg), a fling at 30deg; the next card springs up
+  async swipe(i, dir){
+    const c = this.cards[i], dx = dir * 120;
+    await c.animate([{ transform: "none" }, { transform: `translateX(${-dir * 16}px) rotate(${-dir * 2.5}deg)`, offset: .3 }, { transform: `translate(${dx}px,-6px) rotate(${dx / 18}deg)` }], { duration: 520, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" }).finished;
+    c.animate([{ transform: `translate(${dx}px,-6px) rotate(${dx / 18}deg)` }, { transform: `translate(${dir * 700}px,60px) rotate(${dir * 30}deg)` }], { duration: 400, easing: "cubic-bezier(.4,0,1,.7)", fill: "forwards" }).finished.then(() => c.remove());
+    await wait(90);
+    this.cards.slice(i + 1).forEach((n, j) => { const to = pose(Math.min(j, 2));
+      n.animate([{ transform: n.style.transform }, { transform: to }], { duration: 820, easing: BOUNCE, fill: "forwards" }); n.style.transform = to; });
+    await this.show(i + 1);
+  },
+  // Last card: text leaves, the card's box shrinks onto the phone screen and darkens into the app background,
+  // the phone body grows in around it, then the app's question card pops up
+  async toPhone(){
+    const c = this.cards.at(-1), f = c.firstChild;
+    lines(f).forEach((l, i) => l.animate([{ transform: "none" }, { transform: "translateY(-230%)" }], { duration: 360, delay: i * 40, easing: IN, fill: "forwards" }));
+    await wait(520);
+    c.animate([{ left: "24px", top: "40px", width: "492px", height: "880px", borderRadius: "32px" }, { left: "105.5px", top: "189px", width: "329px", height: "712px", borderRadius: "46px" }], { duration: 1000, easing: MORPH, fill: "forwards" });
+    f.animate([{ background: "#2a1912", boxShadow: "0 18px 50px rgba(0,0,0,.35)" }, { background: "#1c100b", boxShadow: "0 0 0 rgba(0,0,0,0)" }], { duration: 900, easing: "ease-in-out", fill: "forwards" });
+    await wait(380);
+    document.querySelector(".phone").animate([{ opacity: 0, transform: "scale(1.12)" }, { opacity: 1, transform: "none" }], { duration: 900, easing: MORPH, fill: "forwards" });
+    await wait(520);
+    c.remove(); popApp();
+    await wait(420);
+    const t = $("top"); t.innerHTML = ""; const mk = lineEl('<img class="mark" src="app/img/wordmark.svg" alt="">'); t.appendChild(mk);
+    await rise(t); await wait(300);
+  },
+  async caption(k, text){
+    const t = $("top");
+    if (t.children.length) await sink(t, 30);
+    t.innerHTML = "";
+    const kk = document.createElement("div"); kk.className = "k"; kk.appendChild(lineEl(k));
+    const tt = document.createElement("div"); tt.className = "t"; text.split("<br>").forEach(s => tt.appendChild(lineEl(s)));
+    t.append(kk, tt); rise(t, 80);
+  },
+  finger(){},
   // iframe (app) coordinates -> page coordinates
   map(x, y){ const r = $("screen").getBoundingClientRect(), s = r.width / 375; return [r.left + x * s, r.top + (44 + y) * s]; },
-  end(){ $("end").classList.add("on"); $("cap").classList.add("out"); },
+  // Camera pushes into the phone while the orange closes over it, then the end card builds up
+  async end(){
+    sink($("top"), 30);
+    $("cam").animate([{ transform: "none" }, { transform: "translateY(-68px) scale(1.72)" }], { duration: 760, easing: INOUT, fill: "forwards" });
+    await wait(300);
+    const e = $("end");
+    e.animate([{ clipPath: "circle(0px at 270px 480px)" }, { clipPath: "circle(1150px at 270px 480px)" }], { duration: 700, easing: INOUT, fill: "forwards" });
+    fitBlock(e.querySelector(".q"));
+    lines(e).forEach(l => l.style.transform = "translateY(230%)");
+    await wait(520);
+    const [q1, q2, cr] = lines(e);
+    [q1, q2].forEach((l, i) => l.animate([{ transform: "translateY(230%)" }, { transform: "none" }], { duration: 640, delay: i * 110, easing: OUT, fill: "forwards" }));
+    e.querySelector(".cta").animate([{ transform: "scale(0)" }, { transform: "none" }], { duration: 900, delay: 520, easing: SPRING, fill: "forwards" });
+    cr.animate([{ transform: "translateY(230%)" }, { transform: "none" }], { duration: 640, delay: 760, easing: OUT, fill: "forwards" });
+  },
 };
 </script>
 </body>

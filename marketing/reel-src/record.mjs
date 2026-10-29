@@ -17,9 +17,10 @@ const page = await browser.newPage();
 await page.evaluateOnNewDocument(() => {
   if (!location.pathname.includes("/app/")) return;
   let a = 20261028; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  try { localStorage.clear(); } catch {}
+  try { localStorage.clear(); localStorage.setItem("bmc-tutorial-done", "1"); } catch {}
 });
 await page.goto(URL, { waitUntil: "networkidle0" });
+await page.evaluate(() => document.fonts.ready);
 const app = page.frames().find(f => f.url().includes("/app/"));
 await app.evaluate(() => document.fonts.ready);
 // The "tap ▶ in the player" hint is for real phones; headless Spotify can take a few seconds to start, so keep it out of the video
@@ -72,16 +73,30 @@ cdp.on("Page.screencastFrame", ({ data, metadata, sessionId }) => {
 await cdp.send("Page.startScreencast", { format: "jpeg", quality: 95, maxWidth: 1080, maxHeight: 1920, everyNthFrame: 1 });
 const rec = { stop: async () => { await cdp.send("Page.stopScreencast"); writeFileSync("frames.json", JSON.stringify(frames)); } };
 await sleep(300);
-await cap("BUSINESS MODEL CODEX", "ปัดคำถามธุรกิจ<br>แล้วฟังคำตอบได้ทันที");
-await sleep(2600);
+const SCENES = [
+  { c: "orange", t: ["คุณทำ", "ธุรกิจอยู่", "หรือกำลัง", "จะเริ่ม?"] },
+  { c: "ink", t: ["คำถาม", "ที่คุณไม่เคยถาม", "คือความเสี่ยง", "ที่คุณมองไม่เห็น"], blur: 3 },
+  { c: "orange", t: ["ตั้งคำถาม", "ที่ทำให้เห็นจุดอ่อน", "และทางต่อยอดธุรกิจ"] },
+  { c: "cream", t: ["พร้อม use case จริง", "จากบริษัท", "ในตลาดหลักทรัพย์", "ต่างประเทศ"] },
+  { c: "ink", t: ["แล้วสร้างคำตอบ", "ของธุรกิจ", "คุณเอง"] },
+];
+// Swipe direction out of each scene, and how long each scene stays after its text lands
+const DIR = [1, -1, 1, -1];
+const HOLD = [1700, 2300, 2100, 2000, 1900];
+await page.evaluate(s => reel.deck(s), SCENES);
+await page.evaluate(() => reel.deckIn());
+for (let i = 0; i < DIR.length; i++) { await sleep(HOLD[i]); await page.evaluate((i, d) => reel.swipe(i, d), i, DIR[i]); }
+await sleep(HOLD[4]);
+await page.evaluate(() => reel.toPhone());
+await sleep(600);
 
-await cap("1 · ปัดซ้าย", "ไม่ใช่คำถามของคุณ<br>ปัดข้ามไปเลย");
+await cap("1 · ปัดซ้าย", "ยังไม่ใช่คำถามของคุณ<br>ข้ามไป");
 await sleep(700); await swipe(-1); await sleep(900);
 
-await cap("2 · ปัดขวา", "เจอคำถามที่ใช่<br>เก็บไว้ฟัง");
+await cap("2 · ปัดขวา", "คำถามนี้น่าสนใจ<br>เก็บไว้ฟัง");
 await sleep(600); await swipe(1); await sleep(900); await swipe(1); await sleep(1100);
 
-await cap("3 · แตะการ์ด", "ดูว่าตอนนี้<br>เล่าเรื่องบริษัทไหน");
+await cap("3 · แตะการ์ด", "ดูว่าเป็น use case<br>ของบริษัทไหน");
 await sleep(600);
 const card = await rect(".card:not(.gone):last-of-type");
 await tap(card.x, card.y - 40); await sleep(2300);
@@ -92,15 +107,15 @@ await sleep(600);
 const play = await rect("#bPlay");
 await tap(play.x, play.y); await hide(); await sleep(3200);
 
-await cap("5 · ปัดต่อได้", "เสียงไม่หยุด<br>ระหว่างหาคำถามต่อไป");
+await cap("5 · ปัดต่อได้", "ฟังไปด้วย<br>หาคำถามต่อไปด้วย");
 await sleep(600); await swipe(-1); await sleep(800); await swipe(1); await sleep(1000);
 
-await cap("6 · เก็บไว้ฟัง", "รวมเป็น Playlist ของคุณ<br>ฟังจบ เล่นตอนต่อไปให้เอง");
+await cap("6 · Playlist ของคุณ", "รวมคำถามที่เก็บไว้<br>จบตอนหนึ่ง เล่นตอนต่อไปให้เอง");
 await sleep(600);
 const saved = await rect("#savedBtn");
 await tap(saved.x, saved.y); await hide(); await sleep(3600);
 
-await page.evaluate(() => reel.end()); await sleep(3400);
+await page.evaluate(() => reel.end()); await sleep(4200);
 await rec.stop();
 await app.evaluate(() => { try { player.ctrl && player.ctrl.pause(); } catch {} });
 await browser.close();
