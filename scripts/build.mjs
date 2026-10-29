@@ -1,5 +1,5 @@
 // Builds everything in public/ that comes from episodes.json and site.config.json:
-//   episodes.js, config.js, ep/<n>/index.html (share pages with per-question OG meta),
+//   episodes.js, config.js, ep/<n>/index.html (question pages with per-question OG meta), sitemap.xml, robots.txt,
 //   og/<n>.png + og/default.png (rendered with local Google Chrome), sw.js, index.html OG URLs.
 // Usage: node scripts/build.mjs [--og-all]   (--og-all re-renders every OG image)
 import { readFile, writeFile, mkdir, rm, access } from "node:fs/promises";
@@ -43,15 +43,17 @@ index = index
   .replace(/(<meta property="og:image" content="[^"]*">)/, `$1\n<meta property="og:url" content="${site}/">`);
 await writeFile(join(PUB, "index.html"), index);
 
-// ---------- share pages: /ep/<n>/ carries the OG meta, then hands over to /#ep-<n> ----------
+// ---------- question pages: /ep/<n>/ is a real page (question, hook, company, Spotify player) that search engines can index ----------
 await rm(join(PUB, "ep"), { recursive: true, force: true });
-for (const e of eps) {
+const firstLine = e => e.q[0].join(" ");
+for (const [i, e] of eps.entries()) {
   const url = `${site}/ep/${e.n}/`, title = questionText(e), desc = `EP.${e.n} ${e.co} · ${e.hook}`;
+  const prev = eps[i - 1], next = eps[i + 1];
   const html = `<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)} | Business Model Codex</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
@@ -68,16 +70,55 @@ for (const e of eps) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1c100b">
 <link rel="icon" href="../../favicon.ico" sizes="any">
-<script>location.replace("../../#ep-${e.n}")</script>
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../ep.css">
 </head>
-<body style="background:#1c100b;color:#fff7f1;font-family:system-ui,sans-serif;padding:24px">
-<p><a style="color:#fff7f1" href="../../#ep-${e.n}">เปิดคำถาม EP.${e.n}</a></p>
+<body>
+<div class="page">
+<header class="top"><a href="../../" aria-label="Business Model Codex"><img class="logo" src="../../img/wordmark.svg" alt="business model codex" width="1109" height="76"></a></header>
+<main>
+<article class="card">
+<div class="ep">EP.${e.n}</div>
+<h1>${e.q.map(p => `<span class="p">${p.map(l => `<span class="ln">${esc(l)}</span>`).join("")}</span>`).join("")}</h1>
+<div class="foot"><p>${esc(e.hook)}</p><b>${esc(e.co)}</b></div>
+</article>
+<iframe class="player" title="ฟัง EP.${e.n} บน Spotify" src="https://open.spotify.com/embed/episode/${e.id}?theme=0" height="152" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+<div class="btns">
+<a class="btn main" href="../../">ปัดคำถามอื่น</a>
+<a class="btn ghost" href="https://open.spotify.com/episode/${e.id}" target="_blank" rel="noopener">เปิดในแอป Spotify</a>
+<button class="btn ghost" id="share" type="button">แชร์คำถามนี้</button>
+</div>
+<nav class="pn" aria-label="คำถามอื่น">${prev ? `<a class="prev" href="../${prev.n}/"><small>← EP.${prev.n}</small><span>${esc(firstLine(prev))}</span></a>` : "<span></span>"}${next ? `<a class="next" href="../${next.n}/"><small>EP.${next.n} →</small><span>${esc(firstLine(next))}</span></a>` : ""}</nav>
+</main>
+<footer class="credit">Design &amp; Development by <a href="https://suffix.works" target="_blank" rel="noopener"><img src="../../img/suffix.svg" alt="SUFFIX" width="320" height="63"></a></footer>
+</div>
+<script>
+document.getElementById("share").onclick = async function(){
+  var url = location.href.split("#")[0], b = this;
+  try {
+    if (navigator.share) { await navigator.share({ title: document.title, url: url }); return; }
+    await navigator.clipboard.writeText(url); b.textContent = "คัดลอกลิงก์แล้ว"; setTimeout(function(){ b.textContent = "แชร์คำถามนี้"; }, 1800);
+  } catch (err) { if (err && err.name !== "AbortError") prompt("คัดลอกลิงก์นี้", url); }
+};
+</script>
 </body>
 </html>
 `;
   await mkdir(join(PUB, "ep", String(e.n)), { recursive: true });
   await writeFile(join(PUB, "ep", String(e.n), "index.html"), html);
 }
+
+// ---------- sitemap.xml + robots.txt ----------
+await writeFile(join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>${site}/</loc></url>
+${eps.map(e => `<url><loc>${site}/ep/${e.n}/</loc></url>`).join("\n")}
+</urlset>
+`);
+await writeFile(join(PUB, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`);
 
 // ---------- OG images ----------
 const fontUrl = pathToFileURL(join(ROOT, "scripts/assets/Anuphan.ttf")).href;
