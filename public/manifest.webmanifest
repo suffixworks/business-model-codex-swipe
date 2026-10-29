@@ -1,7 +1,7 @@
 {
   "name": "Business Model Codex Swipe",
   "short_name": "Codex Swipe",
-  "description": "ปัดคำถามธุรกิจ แล้วกดฟังตอนที่ตอบคำถามนั้นได้ทันที",
+  "description": "คำถามธุรกิจสำหรับผู้ประกอบการและคนที่กำลังสร้างธุรกิจใหม่ พร้อม use case จากบริษัทในตลาดหลักทรัพย์ต่างประเทศ by SUFFIX",
   "lang": "th",
   "start_url": "./",
   "scope": "./",

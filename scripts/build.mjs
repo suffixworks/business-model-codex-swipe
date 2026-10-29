@@ -123,6 +123,7 @@ await writeFile(join(PUB, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${
 // ---------- OG images ----------
 const fontUrl = pathToFileURL(join(ROOT, "scripts/assets/Anuphan.ttf")).href;
 const markUrl = pathToFileURL(join(PUB, "img/wordmark.svg")).href;
+const suffixUrl = pathToFileURL(join(PUB, "img/suffix.svg")).href;
 const ogPage = body => `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Anuphan;src:url("${fontUrl}");font-weight:100 900}
 *{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
@@ -132,9 +133,9 @@ body{background:#dd492f;color:#fff;font-family:Anuphan,sans-serif;padding:52px 7
 .q{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:safe center;gap:22px;text-align:center;padding:36px 0 30px}
 .q p{margin:0;font-weight:500;line-height:1.38}.q span{display:block;white-space:nowrap}
 .foot{display:flex;justify-content:space-between;align-items:baseline;gap:24px;border-top:2px solid rgba(255,255,255,.35);padding-top:20px;font-size:24px}
-.foot b{font-weight:600}.foot small{font-size:22px;opacity:.85;white-space:nowrap}
+.foot b{font-weight:600}.foot .by{display:flex;align-items:center;gap:10px}.foot .by img{height:22px}.foot small{font-size:22px;opacity:.85;white-space:nowrap}
 .hero{flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px}.hero img{width:100%}
-.hero p{margin:0;font-size:40px;font-weight:500;line-height:1.5}
+.hero p{margin:0;font-size:40px;font-weight:500;line-height:1.5;white-space:nowrap;text-align:center}
 </style></head><body>${body}<script>
 document.fonts.ready.then(()=>{const q=document.querySelector(".q");if(q){let s=52;q.style.fontSize=s+"px";
 while((q.scrollHeight>q.clientHeight||q.scrollWidth>q.clientWidth)&&s>26){s--;q.style.fontSize=s+"px"}}document.title="ready"});
@@ -144,8 +145,8 @@ const ogFor = e => ogPage(`<div class="top"><img src="${markUrl}"><span>EP.${e.n
 <div class="q">${e.q.map(p => `<p>${p.map(l => `<span>${esc(l)}</span>`).join("")}</p>`).join("")}</div>
 <div class="foot"><b>${esc(e.co)}</b><small>ฟังคำตอบใน Business Model Codex</small></div>`);
 const ogDefault = ogPage(`<div class="hero"><img src="${markUrl}">
-<p>ปัดคำถามธุรกิจสำหรับเจ้าของ SME<br>แล้วกดฟังตอนที่ตอบคำถามนั้นได้ทันที</p></div>
-<div class="foot"><b>by SUFFIX</b><small>ฟังทุกตอนบน Spotify</small></div>`);
+<p>คำถามธุรกิจสำหรับผู้ประกอบการและคนที่กำลังสร้างธุรกิจใหม่<br>พร้อม use case จากบริษัทในตลาดหลักทรัพย์ต่างประเทศ</p></div>
+<div class="foot"><b class="by">by <img src="${suffixUrl}" alt="SUFFIX"></b><small>ฟังทุกตอนบน Spotify</small></div>`);
 
 const cache = (await exists(OG_CACHE)) ? JSON.parse(await readFile(OG_CACHE, "utf8")) : {};
 const force = process.argv.includes("--og-all");
